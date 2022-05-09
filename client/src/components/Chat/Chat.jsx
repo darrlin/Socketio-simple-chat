@@ -1,13 +1,17 @@
 import React from 'react';
 import { useState } from 'react';
+import cl from './Chat.module.scss';
 
-const Chat = () => {
+const Chat = ({ users, messages }) => {
     const [messageValue, setMessageValue] = useState('');
 
     return (
-        <div className="chat">
-            <div className="list-users">
-                <b>Users (1):</b>
+        <div className={cl.chat}>
+            <div className={cl.listusers}>
+                <b>Users ({users.length})</b>
+                <ul>
+                    {users.map((name, index) => (<li key={name + index}>{name}</li>))}
+                </ul>
             </div>
             <div className="messages">
                 <div className="message">

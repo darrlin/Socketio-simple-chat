@@ -3,7 +3,9 @@ const io = require('socket.io');
 const cors = require('cors');
 
 const app = express();
+
 app.use(cors());
+
 const server = require('http').createServer(app);
 
 const socketServer = io(server, {
@@ -17,8 +19,16 @@ app.use(express.json());
 
 const rooms = new Map();
 
-app.get('/rooms', (req, res) => {
-   res.json(rooms);
+app.get('/rooms/:id', (req, res) => {
+    const { id: room } = req.params;
+    console.log(room);
+    const obj = rooms.has(room)
+        ? {
+            users: [...rooms.get(room).get('users').values()],
+            messages: [...rooms.get(room).get('messages').values()],
+        }
+        : { users: [], messages: [] };
+    res.json(obj);
 });
 
 app.post('/rooms', (req, res) => {
@@ -33,16 +43,21 @@ app.post('/rooms', (req, res) => {
 });
 
 socketServer.on('connection', (socket) => {
-    socket.on('ROOM:JOIN', ({ room, username }) => { //область, действие
-        socket.join(room); //отправка сокета в конкретную комнату
-        rooms.get(room).get('users').set(socket.id, username); // из конкретной комнаты, коллекции юзеров, сохраняем в реж. реалтайм имя пользователя
-        const users = [...rooms.get(room).get('users').values()]; //получаем имена пользователей
-        socket.broadcast.to(room).emit('ROOM:JOINED', users); //всем кроме меня оповестить что зашел в чат
+    socket.on('ROOM:JOIN', ({ room, username }) => { 
+        socket.join(room);
+        rooms.get(room).get('users').set(socket.id, username); 
+        const users = [...rooms.get(room).get('users').values()]; 
+        socket.broadcast.to(room).emit('ROOM:SET_USERS', users); 
     });
 
-    // socket.on('ROOM:JOIN', (data) => {
-    //     console.log(data);
-    // });
+    socket.on('disconnect', () => {
+        rooms.forEach((value, room) => {
+            if (value.get('users').delete(socket.id)) {
+                const users = [...rooms.get(room).get('users').values()]; 
+                socket.broadcast.to(room).emit('ROOM:SET_USERS', users); 
+            }
+        });
+    });
 
     console.log('user connected', socket.id);
 });
