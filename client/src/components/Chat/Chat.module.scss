@@ -3,20 +3,81 @@
     padding: 0;
 }
 
+$base-color:  rgb(124, 81, 193);
+
 .chat {
-    margin: 40px;
-    height: 600px;
-    background: rgb(206, 212, 244);
-    border-radius: 20px;
+    display: flex;
+    margin: 30px 50px;
+    border-radius: 30px;
+    width: 90%;
 }
 
 .listusers { 
-    background: rgb(223, 127, 127);   
+    background: $base-color; 
+    text-align: center;
+    border-radius: 10px 0 0 10px;
+    width: 100px;
+    padding: 5px;  
     b {
-        font-size: 17px;
+        font-size: 16px;
     }
     li {
         font-size: 14px;
         list-style-type: none;
+        background: rgb(206, 212, 244);
+        border-radius: 5px;
+        margin: 5px;
     }
 }
+
+.inside {
+    background: rgb(206, 212, 244);
+    padding: 15px;
+    width: 100%;
+    // border-radius: 10px;
+}
+
+.messages {
+    margin-top: 280px;
+    display: block;
+}
+
+.message {
+    background: rgb(141, 97, 198);
+    border-radius: 0 10px 10px 0;
+    margin: 15px 0;
+    padding: 10px;
+    width: 80%;
+    p {
+        font-size: 19px;
+    }
+    span {
+        font-size: 13px;
+    }
+}
+
+.form {
+    display: flex;
+    textarea {
+        width: 100%;
+        border-color: rgba(189, 194, 228, 0.715);
+        background: rgba(153, 161, 214, 0.715);
+        font-size: 17px;
+    }
+    button {
+        background-color: $base-color;
+        border: none;
+        padding: 15px;
+        width: 150px;
+        font-size: 19px;
+        &:hover {
+            background: rgba(247, 250, 91, 0.521);
+            transition: 0.2s;
+        } 
+        &:active {
+            background:rgba(247, 250, 91, 0.949)
+        }
+    }
+}
+
+// @media (min-width: 768px) {}

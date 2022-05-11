@@ -32,15 +32,23 @@ function App() {
       type: 'SET_USERS',
       payload: users
     });
-  }
+  };
+
+  const addMessage = (message) => {
+    dispatch({
+      type: 'NEW_MESSAGE',
+      payload: message,
+    });
+  };
 
   useEffect(() => {
     socket.on('ROOM:SET_USERS', setUsers);
+    socket.on('ROOM:NEW_MESSAGE', addMessage);
   }, []);
   
   return (
     <div className="App">
-     {!state.joined ? <JoinBlock onLogin={onLogin}/> : <Chat {...state}/>}
+     {!state.joined ? <JoinBlock onLogin={onLogin}/> : <Chat {...state} onAddMessage={addMessage}/>}
     </div>
   );
 }

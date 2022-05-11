@@ -1,38 +1,50 @@
 import React from 'react';
 import { useState } from 'react';
+import socket from '../../socket';
 import cl from './Chat.module.scss';
 
-const Chat = ({ users, messages }) => {
+const Chat = ({ users, messages, username, room, onAddMessage }) => {
     const [messageValue, setMessageValue] = useState('');
+
+    const sendMessage = () => {
+        socket.emit('NEW_MESSAGE', {
+            username,
+            room,
+            text: messageValue
+        }); 
+        console.log(messageValue);
+        onAddMessage({ username, text: messageValue });
+        setMessageValue('');
+    }
 
     return (
         <div className={cl.chat}>
             <div className={cl.listusers}>
-                <b>Users ({users.length})</b>
+                <b>Online ({users.length})</b>
                 <ul>
                     {users.map((name, index) => (<li key={name + index}>{name}</li>))}
                 </ul>
             </div>
-            <div className="messages">
-                <div className="message">
-                    <p>lorem ipsum dolor sit amet, consectetur adip</p>
-                    <span>User</span>
+            <div className={cl.inside}>
+                <div className={cl.messages}>
+                    {messages.map((message) => ( 
+                        <div key={message} className={cl.message}>
+                        <p>{message.text}</p>
+                        <span>{message.username}</span>
+                    </div>
+                    ))}
                 </div>
-                <div className="message">
-                    <p>Lorem ipsum nulla vitae orci sodales nibh sed vivamus nam adipiscing morbi non, in magna et pellentesque ut: lectus, odio pellentesque mattis, sagittis amet. Nec congue at nam vitae eros lorem congue proin tellus porttitor mattis sem sapien, eget porta, ornare morbi vivamus adipiscing non. Malesuada pellentesque cursus morbi tellus donec integer elementum eros sed arcu amet ut bibendum lectus gravida sodales massa. Commodo at, proin integer mauris eu enim arcu odio et.</p>
-                    <span>User</span>
-                </div>
+                    <form className={cl.form}> 
+                        <textarea 
+                            value={messageValue}
+                            onChange={(e) => setMessageValue(e.target.value)}
+                            rows="3">
+                        </textarea>
+                        <button onClick={sendMessage} type="button">
+                            Send
+                        </button>
+                    </form>
             </div>
-            <form>
-                <textarea 
-                    value={messageValue}
-                    onChange={(e) => setMessageValue(e.target.value)}
-                    rows="3">
-                </textarea>
-                <button>
-                    Send
-                </button>
-            </form>
         </div>
     );
 };
