@@ -1,7 +1,8 @@
 import React from 'react';
 import { useState } from 'react';
 import axios from 'axios';
-import { onLogin } from '../App';
+import { onLogin } from '../../App';
+import cl from './JoinBlock.module.scss';
 
 const JoinBlock = ({ onLogin }) => {
     const [username, setUsername] = useState('');
@@ -25,22 +26,22 @@ const JoinBlock = ({ onLogin }) => {
     };
 
     return (
-        <div>
-            <h3>Join a chat</h3>
+        <div className={cl.join}>
+            <h2>Join a chat</h2>
             <input 
                 type="text" 
                 placeholder="User" 
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-            />
+            /> <br/>
             <input 
                 type="text" 
                 placeholder="Room ID"
                 value={room}
                 onChange={(e) => setRoom(e.target.value)}
-            />
+            /> <br/>
             <button disabled={isLoading} onClick={onEnter}>
-                {isLoading ? 'Вход...' : 'Войти'}
+                {isLoading ? 'Joined...' : 'Join'}
             </button>
         </div>
     );

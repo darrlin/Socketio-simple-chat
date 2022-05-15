@@ -1,6 +1,6 @@
 import React from 'react';
 import { useReducer, useEffect } from 'react';
-import JoinBlock from './components/JoinBlock';
+import JoinBlock from './components/JoinBlock/JoinBlock';
 import reducer from './reduser';
 import socket from './socket';
 import Chat from './components/Chat/Chat';
@@ -23,7 +23,7 @@ function App() {
       payload: obj 
     });
     socket.emit('ROOM:JOIN', obj);
-    const { data } = await axios.get(`/rooms/${obj.room}`);
+    const { data } = await axios.get(`http://localhost:4000/rooms/${obj.room}`);
     setUsers(data.users);
   };
 
@@ -37,7 +37,7 @@ function App() {
   const addMessage = (message) => {
     dispatch({
       type: 'NEW_MESSAGE',
-      payload: message,
+      payload: message
     });
   };
 

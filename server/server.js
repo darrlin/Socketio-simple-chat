@@ -19,9 +19,8 @@ app.use(express.json());
 
 const rooms = new Map();
 
-app.get('rooms/:id', (req, res) => {
+app.get('/rooms/:id', (req, res) => {
     const { id: room } = req.params;
-    console.log(room);
     const obj = rooms.has(room)
         ? {
             users: [...rooms.get(room).get('users').values()],
@@ -33,42 +32,41 @@ app.get('rooms/:id', (req, res) => {
 
 app.post('/rooms', (req, res) => {
     const { room, username } = req.body;
-    if (!rooms.has(room)) { //если не пресутствует комната то создаем её
+    if (!rooms.has(room)) { 
         rooms.set(room, new Map([
             ['users', new Map()],
-            ['massages', []]
+            ['messages', []]
         ]));
     }
-    res.send();  //ответ
+    res.send(); 
 });
 
 socketServer.on('connection', (socket) => {
-    socket.on('ROOM:JOIN', ({ room, username }) => { 
+    socket.on('ROOM:JOIN', ({ username, room }) => { 
         socket.join(room);
-        rooms.get(room).get('users').set(socket.id, username); 
-        const users = [...rooms.get(room).get('users').values()]; 
-        socket.broadcast.to(room).emit('ROOM:SET_USERS', users); 
+        rooms.get(room).get('users').set(socket.id, username);
+        const users = [...rooms.get(room).get('users').values()];
+        socket.to(room).emit('ROOM:SET_USERS', users);
     });
 
-    socket.on('ROOM:NEW_MESSAGE', ({ room, username, text }) => {
+    socket.on('ROOM:NEW_MESSAGE', ({ room, username, text, time }) => {
         const obj = {
-          username,
-          text
+            username,
+            room,
+            text,
+            time
         };
-        rooms.get(room).get('messages').push(obj);
-        socket.to(room).broadcast.emit('ROOM:NEW_MESSAGE', obj);
+        socket.broadcast.to(room).emit('ROOM:NEW_MESSAGE', obj);
     });
 
     socket.on('disconnect', () => {
         rooms.forEach((value, room) => {
             if (value.get('users').delete(socket.id)) {
                 const users = [...rooms.get(room).get('users').values()]; 
-                socket.broadcast.to(room).emit('ROOM:SET_USERS', users); 
+                socket.to(room).emit('ROOM:SET_USERS', users); 
             }
         });
     });
-
-    console.log('user connected', socket.id);
 });
 
 server.listen(4000, (err) => { 
